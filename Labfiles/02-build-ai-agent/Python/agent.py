@@ -14,8 +14,8 @@ def main():
 
     # Load environment variables from .env file
     load_dotenv()
-    PROJECT_CONNECTION_STRING= os.getenv("AZURE_AI_AGENT_PROJECT_CONNECTION_STRING")
-    MODEL_DEPLOYMENT = os.getenv("AZURE_AI_AGENT_MODEL_DEPLOYMENT_NAME")
+    project_endpoint= os.getenv("PROJECT_ENDPOINT")
+    model_deployment = os.getenv("MODEL_DEPLOYMENT_NAME")
 
     # Display the data to be analyzed
     script_dir = Path(__file__).parent  # Get the directory of the script
