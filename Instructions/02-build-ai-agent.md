@@ -101,8 +101,8 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 
     The file is opened in a code editor.
 
-1. In the code file, replace the **your_project_connection_string** placeholder with the connection string for your project (copied from the project **Overview** page in the Azure AI Foundry portal), and the **your_model_deployment** placeholder with the name you assigned to your gpt-4o model deployment.
-1. After you've replaced the placeholders, use the **CTRL+S** command to save your changes and then use the **CTRL+Q** command to close the code editor while keeping the cloud shell command line open.
+1. In the code file, replace the **your_project_endpoint** placeholder with the endpoint for your project (copied from the project **Overview** page in the Azure AI Foundry portal).
+1. After you've replaced the placeholder, use the **CTRL+S** command to save your changes and then use the **CTRL+Q** command to close the code editor while keeping the cloud shell command line open.
 
 ### Write code for an agent app
 
@@ -121,7 +121,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
    # Add references
    from azure.identity import DefaultAzureCredential
    from azure.ai.projects import AIProjectClient
-   from azure.ai.projects.models import FilePurpose, CodeInterpreterTool
+   from azure.ai.agents.models import FilePurpose, CodeInterpreterTool, ListSortOrder
     ```
 
 1. Find the comment **Connect to the Azure AI Foundry project** and add the following code to connect to the Azure AI project.
@@ -130,11 +130,12 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 
     ```python
    # Connect to the Azure AI Foundry project
-   project_client = AIProjectClient.from_connection_string(
-        credential=DefaultAzureCredential
-            (exclude_environment_credential=True,
-             exclude_managed_identity_credential=True),
-        conn_str=PROJECT_CONNECTION_STRING
+   project_client = AIProjectClient(
+       endpoint=project_endpoint,
+       credential=DefaultAzureCredential
+           (exclude_environment_credential=True,
+            exclude_managed_identity_credential=True),
+       api_version="latest"
    )
    with project_client:
     ```
@@ -145,7 +146,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 
     ```python
    # Upload the data file and create a CodeInterpreterTool
-   file = project_client.agents.upload_file_and_poll(
+   file = project_client.agents.files.upload_and_poll(
         file_path=file_path, purpose=FilePurpose.AGENTS
    )
    print(f"Uploaded {file.filename}")
@@ -158,7 +159,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
     ```python
    # Define an agent that uses the CodeInterpreterTool
    agent = project_client.agents.create_agent(
-        model=MODEL_DEPLOYMENT,
+        model=model_deployment,
         name="data-agent",
         instructions="You are an AI agent that analyzes the data in the file that has been uploaded. If the user requests a chart, create it and save it as a .png file.",
         tools=code_interpreter.definitions,
@@ -171,7 +172,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 
     ```python
    # Create a thread for the conversation
-   thread = project_client.agents.create_thread()
+   thread = project_client.agents.threads.create()
     ```
     
 1. Note that the next section of code sets up a loop for a user to enter a prompt, ending when the user enters "quit".
@@ -180,13 +181,13 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 
     ```python
    # Send a prompt to the agent
-   message = project_client.agents.create_message(
+   message = project_client.agents.messages.create(
         thread_id=thread.id,
         role="user",
         content=user_prompt,
     )
 
-    run = project_client.agents.create_and_process_run(thread_id=thread.id, agent_id=agent.id)
+    run = project_client.agents.runs.create_and_process(thread_id=thread.id, agent_id=agent.id)
      ```
 
 1. Find the comment **Check the run status for failures** and add the following code to show any errors that occur.
@@ -201,7 +202,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 
     ```python
    # Show the latest response from the agent
-   messages = project_client.agents.list_messages(thread_id=thread.id)
+   messages = project_client.agents.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
    last_msg = messages.get_last_text_message_by_role("assistant")
    if last_msg:
         print(f"Last Message: {last_msg.text.value}")
@@ -212,10 +213,11 @@ Now you're ready to create a client app that uses an agent. Some code has been p
     ```python
    # Get the conversation history
    print("\nConversation Log:\n")
-   messages = project_client.agents.list_messages(thread_id=thread.id)
-   for message_data in reversed(messages.data):
-        last_message_content = message_data.content[-1]
-        print(f"{message_data.role}: {last_message_content.text.value}\n")
+   messages = project_client.agents.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
+   for message in messages:
+       if message.text_messages:
+           last_msg = message.text_messages[-1]
+           print(f"{message.role}: {last_msg.text.value}\n")
     ```
 
 1. Find the comment **Get any generated files** and add the following code to get any file path annotations from the messages (which indicate that the agent saved a file in its internal storage) and copy the files to the app folder.
@@ -232,7 +234,6 @@ Now you're ready to create a client app that uses an agent. Some code has been p
     ```python
    # Clean up
    project_client.agents.delete_agent(agent.id)
-   project_client.agents.delete_thread(thread.id)
     ```
 
 1. Review the code, using the comments to understand how it:
