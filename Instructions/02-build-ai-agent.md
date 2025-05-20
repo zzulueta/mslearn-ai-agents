@@ -20,47 +20,30 @@ Let's start by creating an Azure AI Foundry project.
 
     ![Screenshot of Azure AI Foundry portal.](./Media/ai-foundry-home.png)
 
-1. In the home page, select **+ Create project**.
-1. In the **Create a project** wizard, enter a valid name for your project and if an existing hub is suggested, choose the option to create a new one. Then review the Azure resources that will be automatically created to support your hub and project.
+1. In the home page, select **Create an agent**.
+1. When prompted to create a project, enter a valid name for your project and expand **Advanced options**.
 1. Select **Customize** and specify the following settings for your hub:
-    - **Hub name**: *A valid name for your hub*
+    - **Azure AI Foundry resource**: *A valid name for your Azure AI Foundry resource*
     - **Subscription**: *Your Azure subscription*
     - **Resource group**: *Create or select a resource group*
-    - **Location**: Select a region from the following:\*
-        - eastus
-        - eastus2
-        - swedencentral
-        - westus
-        - westus3
-    - **Connect Azure AI Services or Azure OpenAI**: *Create a new AI Services resource*
-    - **Connect Azure AI Search**: Skip connecting
+    - **Region**: *Select any **AI Services supported location***\*
 
-    > \* At the time of writing, these regions support the gpt-4o model for use in agents. Model availability is constrained by regional quotas. In the event of a quota limit being reached later in the exercise, there's a possibility you may need to create another project in a different region.
+    > \* Some Azure AI resources are constrained by regional model quotas. In the event of a quota limit being exceeded later in the exercise, there's a possibility you may need to create another resource in a different region.
 
-1. Select **Next** and review your configuration. Then select **Create** and wait for the process to complete.
-1. When your project is created, close any tips that are displayed and review the project page in Azure AI Foundry portal, which should look similar to the following image:
+1. Select **Create** and wait for your project to be created.
+1. When your project is created, the Agents playground will be opened automatically so you can select or deploy a model:
 
-    ![Screenshot of a Azure AI project details in Azure AI Foundry portal.](./Media/ai-foundry-project.png)
+    ![Screenshot of a Azure AI Foundry project Agents playground.](./Media/ai-foundry-agents-playground.png)
 
-## Deploy a generative AI model
+    >**Note**: A GPT-4o base model is automatically deployed when creating your Agent and project.
 
-Now you're ready to deploy a generative AI language model to support your agent.
+1. In the navigation pane on the left, select **Overview** to see the main page for your project; which looks like this:
 
-1. In the pane on the left for your project, in the **My assets** section, select the **Models + endpoints** page.
-1. In the **Models + endpoints** page, in the **Model deployments** tab, in the **+ Deploy model** menu, select **Deploy base model**.
-1. Search for the **gpt-4o** model in the list, and then select and confirm it.
-1. Deploy the model with the following settings by selecting **Customize** in the deployment details:
-    - **Deployment name**: *A valid name for your model deployment*
-    - **Deployment type**: Global Standard
-    - **Automatic version update**: Enabled
-    - **Model version**: *Select the most recent available version*
-    - **Connected AI resource**: *Select your Azure OpenAI resource connection*
-    - **Tokens per Minute Rate Limit (thousands)**: 50K *(or the maximum available in your subscription if less than 50K)*
-    - **Content filter**: DefaultV2
+    > **Note**: If an *Insufficient permissions** error is displayed, use the **Fix me** button to resolve it.
 
-    > **Note**: Reducing the TPM helps avoid over-using the quota available in the subscription you are using. 50,000 TPM should be sufficient for the data used in this exercise. If your available quota is lower than this, you will be able to complete the exercise but you may need to wait and resubmit prompts if the rate limit is exceeded.
+    ![Screenshot of a Azure AI Foundry project overview page.](./Media/ai-foundry-project.png)
 
-1. Wait for the deployment to complete.
+1. Copy the **Azure AI Foundry project endpoint** and **API Key** values to a notepad, as you'll use them to connect to your project in a client application.
 
 ## Create an agent client app
 
