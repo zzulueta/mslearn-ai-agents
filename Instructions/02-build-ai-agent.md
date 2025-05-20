@@ -90,7 +90,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
     ```
    python -m venv labenv
    ./labenv/bin/Activate.ps1
-   pip install python-dotenv azure-identity azure-ai-projects
+   pip install -r requirements.txt azure-ai-projects
     ```
 
 1. Enter the following command to edit the configuration file that has been provided:
@@ -120,33 +120,32 @@ Now you're ready to create a client app that uses an agent. Some code has been p
     ```python
    # Add references
    from azure.identity import DefaultAzureCredential
-   from azure.ai.projects import AIProjectClient
-   from azure.ai.agents.models import FilePurpose, CodeInterpreterTool, ListSortOrder
+   from azure.ai.agents import AgentsClient
+   from azure.ai.agents.models import FilePurpose, CodeInterpreterTool, ListSortOrder, MessageRole
     ```
 
-1. Find the comment **Connect to the Azure AI Foundry project** and add the following code to connect to the Azure AI project.
+1. Find the comment **Connect to the Agent client** and add the following code to connect to the Azure AI project.
 
     > **Tip**: Be careful to maintain the correct indentation level.
 
     ```python
-   # Connect to the Azure AI Foundry project
-   project_client = AIProjectClient(
+   # Connect to the Agent client
+   agent_client = AgentsClient(
        endpoint=project_endpoint,
        credential=DefaultAzureCredential
            (exclude_environment_credential=True,
-            exclude_managed_identity_credential=True),
-       api_version="latest"
+            exclude_managed_identity_credential=True)
    )
-   with project_client:
+   with agent_client:
     ```
 
-    The code connects to the Azure AI Foundry project using the current Azure credentials. The final *with project_client* statement starts a code block that defines the scope of the client, ensuring it's cleaned up when the code within the block is finished.
+    The code connects to the Azure AI Foundry project using the current Azure credentials. The final *with agent_client* statement starts a code block that defines the scope of the client, ensuring it's cleaned up when the code within the block is finished.
 
-1. Find the comment **Upload the data file and create a CodeInterpreterTool**, within the *with project_client* block, and add the following code to upload the data file to the project and create a CodeInterpreterTool that can access the data in it:
+1. Find the comment **Upload the data file and create a CodeInterpreterTool**, within the *with agent_client* block, and add the following code to upload the data file to the project and create a CodeInterpreterTool that can access the data in it:
 
     ```python
    # Upload the data file and create a CodeInterpreterTool
-   file = project_client.agents.files.upload_and_poll(
+   file = agent_client.files.upload_and_poll(
         file_path=file_path, purpose=FilePurpose.AGENTS
    )
    print(f"Uploaded {file.filename}")
@@ -158,7 +157,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 
     ```python
    # Define an agent that uses the CodeInterpreterTool
-   agent = project_client.agents.create_agent(
+   agent = agent_client.create_agent(
         model=model_deployment,
         name="data-agent",
         instructions="You are an AI agent that analyzes the data in the file that has been uploaded. If the user requests a chart, create it and save it as a .png file.",
@@ -172,7 +171,7 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 
     ```python
    # Create a thread for the conversation
-   thread = project_client.agents.threads.create()
+   thread = agent_client.threads.create()
     ```
     
 1. Note that the next section of code sets up a loop for a user to enter a prompt, ending when the user enters "quit".
@@ -181,18 +180,14 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 
     ```python
    # Send a prompt to the agent
-   message = project_client.agents.messages.create(
+   message = agent_client.messages.create(
         thread_id=thread.id,
         role="user",
         content=user_prompt,
     )
 
-    run = project_client.agents.runs.create_and_process(thread_id=thread.id, agent_id=agent.id)
-     ```
-
-1. Find the comment **Check the run status for failures** and add the following code to show any errors that occur.
-
-    ```python
+   run = agent_client.runs.create_and_process(thread_id=thread.id, agent_id=agent.id)
+     
    # Check the run status for failures
    if run.status == "failed":
         print(f"Run failed: {run.last_error}")
@@ -202,10 +197,12 @@ Now you're ready to create a client app that uses an agent. Some code has been p
 
     ```python
    # Show the latest response from the agent
-   messages = project_client.agents.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
-   last_msg = messages.get_last_text_message_by_role("assistant")
+   last_msg = agent_client.messages.get_last_message_text_by_role(
+       thread_id=thread.id,
+       role=MessageRole.AGENT,
+   )
    if last_msg:
-        print(f"Last Message: {last_msg.text.value}")
+       print(f"Last Message: {last_msg.text.value}")
     ```
 
 1. Find the comment **Get the conversation history**, which is after the loop ends, and add the following code to print out the messages from the conversation thread; reversing the order to show them in chronological sequence
@@ -213,27 +210,31 @@ Now you're ready to create a client app that uses an agent. Some code has been p
     ```python
    # Get the conversation history
    print("\nConversation Log:\n")
-   messages = project_client.agents.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
+   messages = agent_client.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
    for message in messages:
        if message.text_messages:
            last_msg = message.text_messages[-1]
            print(f"{message.role}: {last_msg.text.value}\n")
     ```
 
-1. Find the comment **Get any generated files** and add the following code to get any file path annotations from the messages (which indicate that the agent saved a file in its internal storage) and copy the files to the app folder.
+1. Find the comment **Get any generated files** and add the following code to get any file path annotations from the messages (which indicate that the agent saved a file in its internal storage) and copy the files to the app folder. _NOTE_: Currently the image contents are not available by the system.
 
     ```python
    # Get any generated files
-   for file_path_annotation in messages.file_path_annotations:
-        project_client.agents.save_file(file_id=file_path_annotation.file_path.file_id, file_name=Path(file_path_annotation.text).name)
-        print(f"File saved as {Path(file_path_annotation.text).name}")
+   for msg in messages:
+       # Save every image file in the message
+       for img in msg.image_contents:
+           file_id = img.image_file.file_id
+           file_name = f"{file_id}_image_file.png"
+           agent_client.files.save(file_id=file_id, file_name=file_name)
+           print(f"Saved image file to: {Path.cwd() / file_name}")
     ```
 
 1. Find the comment **Clean up** and add the following code to delete the agent and thread when no longer needed.
 
     ```python
    # Clean up
-   project_client.agents.delete_agent(agent.id)
+   agent_client.delete_agent(agent.id)
     ```
 
 1. Review the code, using the comments to understand how it:

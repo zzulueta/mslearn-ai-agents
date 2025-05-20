@@ -25,7 +25,7 @@ def main():
         data = file.read() + "\n"
         print(data)
 
-    # Connect to the Azure AI Foundry project
+    # Connect to the Agent client
 
 
         # Upload the data file and create a CodeInterpreterTool
