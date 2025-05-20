@@ -15,6 +15,7 @@ def main():
     # Load environment variables from .env file
     load_dotenv()
     project_endpoint= os.getenv("PROJECT_ENDPOINT")
+    model_deployment = os.getenv("MODEL_DEPLOYMENT_NAME")
 
     # Display the data to be analyzed
     script_dir = Path(__file__).parent  # Get the directory of the script
