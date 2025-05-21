@@ -22,7 +22,7 @@ Let's start by creating an Azure AI Foundry project.
 
 1. In the home page, select **Create an agent**.
 1. When prompted to create a project, enter a valid name for your project.
-1. Expand **Advanced options** and specify the following settings for your hub:
+1. Expand **Advanced options** and specify the following settings:
     - **Azure AI Foundry resource**: *A valid name for your Azure AI Foundry resource*
     - **Subscription**: *Your Azure subscription*
     - **Resource group**: *Select your resource group, or create a new one*
