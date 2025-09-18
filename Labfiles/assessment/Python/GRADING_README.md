@@ -4,29 +4,29 @@
 
 This auto-grading system evaluates student submissions for the Azure DevOps work items related to building a restaurant order management AI agent. It provides comprehensive scoring and feedback aligned with the specific tasks outlined in the Azure DevOps backlog.
 
-## 🎯 What Gets Graded
+## 🎯 What Gets Graded (AI Agent Focus)
 
 ### Azure DevOps Work Items Covered:
 
-1. **PBI-2024-045: Infrastructure Setup** (20 points)
-   - Azure AI SDK imports
-   - Azure client connection 
-   - Environment configuration
+1. **PBI-2024-045: Azure AI Agent Setup** (20 points)
+   - Azure AI SDK model imports (FunctionTool, ToolSet, MessageRole, ListSortOrder)
+   - FunctionTool creation and ToolSet configuration
+   - Agent creation with restaurant context
 
-2. **TASK-2024-156: Order Processing Functions** (25 points)
-   - `calculate_order_total()` implementation
-   - `process_restaurant_order()` implementation
-   - `user_functions` set definition
+2. **Custom Function Implementation** (25 points)
+   - `calculate_order_total()` function completion
+   - `process_restaurant_order()` function completion  
+   - `user_functions` Set definition and population (critical for agent discovery)
 
-3. **TASK-2024-157: Agent Configuration** (20 points)
-   - FunctionTool and ToolSet setup
-   - Agent creation with proper parameters
-   - Thread management
+3. **Agent Communication Flow** (20 points)
+   - Message creation and thread processing
+   - Agent response retrieval and display
+   - Conversation history management
 
-4. **TASK-2024-158: Error Handling** (15 points)
+4. **Resource Management** (15 points)
    - Run status error checking
-   - Resource cleanup implementation
-   - Input validation
+   - Agent cleanup and deletion
+   - Proper thread lifecycle handling
 
 5. **PBI-2024-046: Conversation History** (20 points)
    - Message retrieval
@@ -34,6 +34,27 @@ This auto-grading system evaluates student submissions for the Azure DevOps work
    - Chronological ordering
 
 **Total: 100 points**
+
+## ⏱️ Estimated Completion Time
+
+With the enhanced starter code provided:
+- **Competent Student**: 30-40 minutes
+- **Average Student**: 45-60 minutes  
+- **Beginner Student**: 60-90 minutes
+
+### Key AI Agent Learning Objectives (Focus Areas):
+1. **Azure AI SDK Integration** - Understanding FunctionTool and ToolSet
+2. **Function Exposure for Agent Discovery** - Properly defining user_functions Set
+3. **Agent Function Discovery** - How agents automatically find and call functions
+4. **Conversation Thread Management** - Stateful agent interactions
+5. **Agent Communication Flow** - Message creation, processing, and response handling
+6. **Resource Lifecycle Management** - Proper agent cleanup
+
+### Provided Starter Code Reduces:
+- Generic Python programming tasks
+- Boilerplate code writing
+- Environment setup complexity
+- Non-AI specific implementation details
 
 ## 📋 Usage
 

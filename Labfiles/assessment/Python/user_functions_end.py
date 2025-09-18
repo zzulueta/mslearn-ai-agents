@@ -16,11 +16,13 @@ MENU_ITEMS = {
     "dessert": 6.99
 }
 
-# Create a function to calculate order total
+# Complete calculate_order_total function - COMPLETED VERSION
 def calculate_order_total(items: list) -> str:
+    """Calculate the total cost for a list of menu items."""
     total = 0.0
     order_details = []
     
+    # COMPLETED: Loop through each item and calculate total
     for item in items:
         item_lower = item.lower().strip()
         if item_lower in MENU_ITEMS:
@@ -30,6 +32,7 @@ def calculate_order_total(items: list) -> str:
         else:
             order_details.append({"item": item_lower, "price": 0.0, "note": "Item not found"})
     
+    # COMPLETED: Return JSON string with total and itemized breakdown
     result = {
         "items": order_details,
         "total": round(total, 2),
@@ -37,17 +40,20 @@ def calculate_order_total(items: list) -> str:
     }
     return json.dumps(result)
 
-# Create a function to process a restaurant order
+# Complete process_restaurant_order function - COMPLETED VERSION
 def process_restaurant_order(customer_name: str, phone_number: str, items: list) -> str:
+    """Process a complete restaurant order and save to file."""
     script_dir = Path(__file__).parent
+    
+    # COMPLETED: Generate unique order number and create filename
     order_number = str(uuid.uuid4()).replace('-', '')[:8]
     file_name = f"order-{order_number}.txt"
     file_path = script_dir / file_name
     
-    # Calculate total
+    # COMPLETED: Calculate total using calculate_order_total function
     order_calc = json.loads(calculate_order_total(items))
     
-    # Create order text
+    # COMPLETED: Create order text content
     order_text = f"Restaurant Order: {order_number}\n"
     order_text += f"Customer: {customer_name}\n"
     order_text += f"Phone: {phone_number}\n"
@@ -62,7 +68,7 @@ def process_restaurant_order(customer_name: str, phone_number: str, items: list)
     order_text += f"\nTotal: ${order_calc['total']:.2f}\n"
     order_text += f"Order placed at: {Path(__file__).parent}"
     
-    # Save order
+    # COMPLETED: Save to file and return confirmation JSON
     file_path.write_text(order_text)
     
     message = {
@@ -72,7 +78,7 @@ def process_restaurant_order(customer_name: str, phone_number: str, items: list)
     }
     return json.dumps(message)
 
-# Define a set of callable functions
+# Define the function set for Azure AI agent - COMPLETED VERSION
 user_functions: Set[Callable[..., Any]] = {
     calculate_order_total,
     process_restaurant_order

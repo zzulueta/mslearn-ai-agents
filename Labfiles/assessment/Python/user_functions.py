@@ -16,39 +16,69 @@ MENU_ITEMS = {
     "dessert": 6.99
 }
 
-# TODO: Create a function to calculate order total
-# STUDENT TASK: Implement a function named 'calculate_order_total' that:
-# - Takes a list of menu items as parameter (items: list)
-# - Calculates the total cost using the MENU_ITEMS dictionary
-# - Returns a JSON string with the total amount and itemized breakdown
-# 
-# Example function signature:
-# def calculate_order_total(items: list) -> str:
-#     # Your implementation here
-#     pass
+# TODO: Complete the calculate_order_total function
+def calculate_order_total(items: list) -> str:
+    """Calculate the total cost for a list of menu items."""
+    total = 0.0
+    order_details = []
+    
+    # STUDENT TASK: Complete this function
+    # 1. Loop through each item in the items list
+    # 2. Check if item exists in MENU_ITEMS (convert to lowercase)
+    # 3. Add price to total and create order detail entry
+    # 4. Handle items not found in menu
+    # 5. Return JSON string with total and itemized breakdown
+    
+    # Example structure for return value:
+    # result = {
+    #     "items": order_details,
+    #     "total": round(total, 2),
+    #     "message": f"Order total calculated: ${total:.2f}"
+    # }
+    # return json.dumps(result)
+    
+    pass  # Remove this and add your implementation
 
 
 
-# TODO: Create a function to process a restaurant order
-# STUDENT TASK: Implement a function named 'process_restaurant_order' that:
-# - Takes customer_name (str), phone_number (str), and items (list) as parameters
-# - Generates a unique order number using uuid
-# - Calculates total using the calculate_order_total function
-# - Saves the order to a text file named "order-{order_number}.txt"
-# - Returns a JSON string with order confirmation details
-#
-# Example function signature:
-# def process_restaurant_order(customer_name: str, phone_number: str, items: list) -> str:
-#     # Your implementation here
-#     pass
+# TODO: Complete the process_restaurant_order function
+def process_restaurant_order(customer_name: str, phone_number: str, items: list) -> str:
+    """Process a complete restaurant order and save to file."""
+    script_dir = Path(__file__).parent
+    
+    # STUDENT TASK: Complete this function
+    # 1. Generate unique order number: str(uuid.uuid4()).replace('-', '')[:8]
+    # 2. Create filename: f"order-{order_number}.txt"  
+    # 3. Calculate total using your calculate_order_total function
+    # 4. Create order text with customer info, items, and total
+    # 5. Save to file using file_path.write_text(order_text)
+    # 6. Return JSON confirmation with order number and total
+    
+    # Provided starter code:
+    order_number = str(uuid.uuid4()).replace('-', '')[:8]
+    file_name = f"order-{order_number}.txt"
+    file_path = script_dir / file_name
+    
+    # TODO: Calculate total using calculate_order_total function
+    # TODO: Create order text content
+    # TODO: Save to file and return confirmation JSON
+    
+    pass  # Remove this and add your implementation
 
 
 
-# TODO: Define a set of callable functions
+# TODO: Define the function set for Azure AI agent
 # STUDENT TASK: Create a Set containing your implemented functions
-# This set will be used by the Azure AI agent to discover available functions
+# This set enables Azure AI agents to automatically discover and call your functions
+# 
+# Instructions:
+# 1. Create a Set with type annotation: Set[Callable[..., Any]]
+# 2. Name the variable 'user_functions' 
+# 3. Add both of your implemented functions to the set
+# 4. This allows the AI agent to automatically find and use your functions
 #
-# Example:
+# Example structure:
 # user_functions: Set[Callable[..., Any]] = {
-#     # Add your functions here
+#     your_function_name_here,
+#     your_other_function_name_here
 # }

@@ -16,31 +16,31 @@ Develop an intelligent restaurant order management system using Azure AI agents 
 As a developer, I need to implement a complete restaurant order AI agent with custom function tools so that customers can place orders through natural language conversations.
 
 **Requirements:**
-1. **Azure AI Infrastructure Setup**
-   - Set up Azure AI Foundry project with GPT-4o deployment
-   - Configure environment variables and authentication
-   - Establish AgentsClient connection with DefaultAzureCredential
+1. **Azure AI Agent Setup**
+   - Complete the FunctionTool creation from user_functions
+   - Configure ToolSet and enable auto function calls
+   - Create agent with proper restaurant order instructions
+   - Set up conversation thread management
 
-2. **Order Processing Functions**
-   - Create `calculate_order_total()` function with menu pricing logic
-   - Implement `process_restaurant_order()` function for complete workflow
-   - Functions must return JSON responses and handle invalid menu items
-   - Generate unique order numbers using UUID and save orders to files
+2. **Custom Function Implementation** 
+   - Complete `calculate_order_total()` function logic for menu pricing
+   - Complete `process_restaurant_order()` function for order workflow
+   - Define and populate `user_functions` Set for agent function discovery
 
-3. **AI Agent Configuration**
-   - Import Azure AI SDK classes (FunctionTool, ToolSet, MessageRole)
-   - Create FunctionTool from user functions and configure ToolSet
-   - Enable auto function calls and set up conversation threads
-   - Write agent instructions for restaurant order context
+3. **Agent Communication Flow**
+   - Import required Azure AI SDK models (FunctionTool, ToolSet, MessageRole, ListSortOrder)
+   - Implement message creation and thread processing
+   - Add run status checking and error handling
+   - Display agent responses and conversation history
 
-4. **Error Handling and Cleanup**
-   - Check run status for failures and display error messages
-   - Implement proper agent and thread resource cleanup
-   - Add input validation and handle edge cases gracefully
+4. **Resource Management**
+   - Implement proper agent cleanup and deletion
+   - Handle conversation thread lifecycle
 
 **Acceptance Criteria:**
 - ✅ Agent connects to Azure AI Foundry without errors
-- ✅ Custom functions are automatically discovered and called by agent
+- ✅ Custom functions are properly exposed in user_functions Set
+- ✅ Functions are automatically discovered and called by agent
 - ✅ Order processing calculates totals correctly and saves files
 - ✅ Agent maintains conversation context throughout interactions
 - ✅ Error handling prevents crashes and provides meaningful messages

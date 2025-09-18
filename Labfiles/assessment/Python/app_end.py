@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from typing import Any
 from pathlib import Path
 
-# Add references
+# Azure AI SDK imports - COMPLETED VERSION
 from azure.identity import DefaultAzureCredential
 from azure.ai.agents import AgentsClient
 from azure.ai.agents.models import FunctionTool, ToolSet, ListSortOrder, MessageRole
@@ -19,7 +19,7 @@ def main():
     project_endpoint= os.getenv("PROJECT_ENDPOINT")
     model_deployment = os.getenv("MODEL_DEPLOYMENT_NAME")
 
-    # Connect to the Agent client
+    # Create Azure AI client connection
     agent_client = AgentsClient(
         endpoint=project_endpoint,
         credential=DefaultAzureCredential(
@@ -27,15 +27,17 @@ def main():
             exclude_managed_identity_credential=True)
     )
 
-    # Define an agent that can use the custom functions
+    # Create agent with function tools - COMPLETED VERSION
     with agent_client:
-        # Create function tools
+        # 1. Create a FunctionTool from user_functions - COMPLETED
         functions = FunctionTool(user_functions)
+        
+        # 2. Create ToolSet and add functions, enable auto function calls - COMPLETED
         toolset = ToolSet()
         toolset.add(functions)
         agent_client.enable_auto_function_calls(toolset)
         
-        # Create the restaurant order agent
+        # 3. Create the agent with proper instructions and toolset - COMPLETED
         agent = agent_client.create_agent(
             model=model_deployment,
             name="restaurant-order-agent",
@@ -48,56 +50,55 @@ def main():
             toolset=toolset
         )
         
-        # Create conversation thread
+        # 4. Create conversation thread and print welcome message - COMPLETED
         thread = agent_client.threads.create()
         print(f"Welcome! You're chatting with: {agent.name} ({agent.id})")
         print("I can help you place a restaurant order. Just tell me what you'd like!")
 
-    
-    # Loop until the user types 'quit'
-    while True:
-        # Get input text
-        user_prompt = input("Enter your order request (or type 'quit' to exit): ")
-        if user_prompt.lower() == "quit":
-            break
-        if len(user_prompt) == 0:
-            print("Please enter an order request.")
-            continue
+        # Loop until the user types 'quit'
+        while True:
+            # Get input text
+            user_prompt = input("Enter your order request (or type 'quit' to exit): ")
+            if user_prompt.lower() == "quit":
+                break
+            if len(user_prompt) == 0:
+                print("Please enter an order request.")
+                continue
 
-        # Send a prompt to the agent
-        message = agent_client.messages.create(
-            thread_id=thread.id,
-            role="user",
-            content=user_prompt
-        )
-        run = agent_client.runs.create_and_process(thread_id=thread.id, agent_id=agent.id)
+            # Send message to agent and get response - COMPLETED
+            message = agent_client.messages.create(
+                thread_id=thread.id,
+                role="user",
+                content=user_prompt
+            )
+            run = agent_client.runs.create_and_process(thread_id=thread.id, agent_id=agent.id)
 
-        # Check the run status for failures
-        if run.status == "failed":
-            print(f"Run failed: {run.last_error}")
-            
-        # Show the latest response from the agent
-        last_msg = agent_client.messages.get_last_message_text_by_role(
-            thread_id=thread.id,
-            role=MessageRole.AGENT,
-        )
-        if last_msg:
-            print(f"\n{agent.name}: {last_msg.text.value}\n")
+            # Check run status and handle errors - COMPLETED
+            if run.status == "failed":
+                print(f"Run failed: {run.last_error}")
+                
+            # Display the agent's response - COMPLETED
+            last_msg = agent_client.messages.get_last_message_text_by_role(
+                thread_id=thread.id,
+                role=MessageRole.AGENT,
+            )
+            if last_msg:
+                print(f"\n{agent.name}: {last_msg.text.value}\n")
 
-    # Get the conversation history
-    print("\n" + "="*50)
-    print("CONVERSATION HISTORY")
-    print("="*50)
-    messages = agent_client.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
-    for message in messages:
-        if message.text_messages:
-            last_msg = message.text_messages[-1]
-            role_name = "Customer" if message.role == "user" else agent.name
-            print(f"{role_name}: {last_msg.text.value}\n")
+        # Show conversation history - COMPLETED
+        print("\n" + "="*50)
+        print("CONVERSATION HISTORY")
+        print("="*50)
+        messages = agent_client.messages.list(thread_id=thread.id, order=ListSortOrder.ASCENDING)
+        for message in messages:
+            if message.text_messages:
+                last_msg = message.text_messages[-1]
+                role_name = "Customer" if message.role == "user" else agent.name
+                print(f"{role_name}: {last_msg.text.value}\n")
 
-    # Clean up
-    agent_client.delete_agent(agent.id)
-    print(f"Thank you for using {agent.name}! Agent resources have been cleaned up.")
+        # Clean up resources - COMPLETED
+        agent_client.delete_agent(agent.id)
+        print(f"Thank you for using {agent.name}! Agent resources have been cleaned up.")
 
 if __name__ == '__main__': 
     main()
