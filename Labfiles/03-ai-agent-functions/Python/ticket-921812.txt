@@ -1,0 +1,4 @@
+Support ticket: 921812
+Submitted by: ziggy.zulueta@gmail.com
+Description:
+User is unable to access their email. Needs assistance resolving this issue.
