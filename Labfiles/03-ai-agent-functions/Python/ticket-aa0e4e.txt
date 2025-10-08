@@ -1,0 +1,7 @@
+Support ticket: aa0e4e
+Status: Resolved
+Submitted by: lebron.james@gmail.com
+Description:
+Cannot send Outlook emails
+Resolution:
+configuration was modified.

@@ -43,6 +43,7 @@ def main():
                             When a user has a technical issue, you get their email address and a description of the issue.
                             Then you use those values to submit a support ticket using the function available to you.
                             If a file is saved, tell the user the file name.
+                            You can also check the status of a ticket if the user provides a ticket number.
                         """,
             toolset=toolset
         )

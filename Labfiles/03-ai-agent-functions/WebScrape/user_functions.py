@@ -33,9 +33,39 @@ def scrape_url_info(url: str) -> str:
         return json.dumps({'error': str(e), 'url': url})
 
 
+
+
+# Function to save output to a Word document
+def save_output_to_word(output: str, filename: str = "output.docx") -> str:
+    """
+    Saves the given output (string or JSON string) to a Word document.
+    If output is a JSON string with 'url' and 'text', formats them nicely.
+    Returns the filename used.
+    """
+    try:
+        from docx import Document
+    except ImportError:
+        return "python-docx package is not installed. Please install it to use this function."
+
+    doc = Document()
+    try:
+        # Try to parse as JSON
+        data = json.loads(output)
+        if isinstance(data, dict) and 'url' in data and 'text' in data:
+            doc.add_heading(f"Scraped Content from {data['url']}", level=1)
+            doc.add_paragraph(data['text'])
+        else:
+            doc.add_paragraph(output)
+    except Exception:
+        # Not JSON, just add as plain text
+        doc.add_paragraph(output)
+    doc.save(filename)
+    return filename
+
 # Define a set of callable functions
 user_functions: Set[Callable[..., Any]] = {
-    scrape_url_info
+    scrape_url_info,
+    save_output_to_word
 }
 
 

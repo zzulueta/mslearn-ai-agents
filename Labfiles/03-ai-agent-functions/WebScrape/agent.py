@@ -51,6 +51,8 @@ def main():
             If the subject matter is not found, respond with an appropriate message. 
             Handle errors gracefully, such as invalid URLs, network issues, or missing content.
 
+            Once you have the result, save it in a Word document named 'output.docx' using the provided function.
+
             List of URLs to analyze:
             {data}
             """

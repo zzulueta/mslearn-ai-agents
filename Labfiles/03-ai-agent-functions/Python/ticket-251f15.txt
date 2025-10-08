@@ -1,0 +1,5 @@
+Support ticket: 251f15
+Status: Submitted
+Submitted by: zig@gmail.com
+Description:
+User cannot open Microsoft Teams.

@@ -1,3 +1,4 @@
 cnn.com
 bbc.com
 aljazeera.com
+nytimes.com
